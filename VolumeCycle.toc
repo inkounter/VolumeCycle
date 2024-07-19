@@ -1,0 +1,11 @@
+## Interface: 100207
+## Author: Inkounter
+## Title: Volume Cycle
+## Version: 1.0
+## Notes: An LDB module to cycle between various volume presets.
+
+Libs/LibStub/LibStub.lua
+Libs/CallbackHandler-1.0/CallbackHandler-1.0.lua
+Libs/LibDataBroker-1.1/LibDataBroker-1.1.lua
+
+main.lua
