@@ -93,6 +93,8 @@ local DataObject = {
 
     ['label'] = 'Volume',
 
+    ['icon'] = 'interface/common/voicechat-speaker.blp',
+
     ['OnClick'] = function(frame, mouseButton)
         if mouseButton == 'LeftButton' then
             cycleVolume()
