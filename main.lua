@@ -21,8 +21,7 @@ local setVolume = function(value)
 end
 
 local cycleVolume = function()
-    -- Set the master volume to the next preset value.  Return the new master
-    -- volume value as a number in the range, '[0, 100]'.
+    -- Set the master volume to the next preset value.
 
     -- Since the set of presets should be small, linear iteration is fast
     -- enough, and we don't need binary search.
@@ -38,18 +37,15 @@ local cycleVolume = function()
                 i = i + 1
             end
 
-            volume = volumePresets[i]
-            setVolume(volume)
-            return volume
+            setVolume(volumePresets[i])
+            return
         end
     end
 
     -- The current volume doesn't match any preset.  Set it to the first
     -- preset.
 
-    volume = volumePresets[1]
-    setVolume(volume)
-    return volume
+    setVolume(volumePresets[1])
 end
 
 local initialVolume = getVolume()
@@ -60,10 +56,22 @@ local dataObject = ldb:NewDataObject('VolumeCycle',
                                        ['suffix'] = '%',
                                        ['label'] = 'Volume' })
 
-dataObject.OnClick = function(self, button)
-    if button == 'LeftButton' then
-        local newVolume = cycleVolume()
-        dataObject.value = tostring(newVolume)
-        dataObject.text = newVolume .. '%'
+dataObject.OnClick = function(frame, mouseButton)
+    if mouseButton == 'LeftButton' then
+        cycleVolume()
     end
 end
+
+local dummyFrame = CreateFrame("Frame")
+local handleEvent = function(self, event, ...)
+    if event == 'CVAR_UPDATE' then
+        local cvar, value = ...
+        if cvar == 'Sound_MasterVolume' then
+            dataObject.value = tostring(math.floor(tonumber(value) * 100 + 0.5))
+            dataObject.text = dataObject.value .. dataObject.suffix
+        end
+    end
+end
+
+dummyFrame:RegisterEvent('CVAR_UPDATE')
+dummyFrame:SetScript('OnEvent', handleEvent)
