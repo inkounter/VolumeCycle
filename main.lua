@@ -60,33 +60,10 @@ local toggleMute = function()
     SetCVar('Sound_EnableAllSound', 1 and isMuted() or 0)
 end
 
-local initialVolume = getVolume()
-local dataObject = ldb:NewDataObject('VolumeCycle',
-                                     { ['type'] = 'data source',
-                                       ['text'] = initialVolume .. '%',
-                                       ['value'] = tostring(initialVolume),
-                                       ['suffix'] = '%',
-                                       ['label'] = 'Volume' })
-
-dataObject.OnClick = function(frame, mouseButton)
-    if mouseButton == 'LeftButton' then
-        cycleVolume()
-    elseif mouseButton == 'MiddleButton' then
-        Sound_GameSystem_RestartSoundSystem()
-    elseif mouseButton == 'RightButton' then
-        toggleMute()
-    end
-end
-
-dataObject.OnTooltipShow = function(frame)
-    frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Left Click:|r cycle through volume presets")
-    frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Middle Click:|r reload default sound inputs/outputs")
-    frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Right Click:|r toggle mute")
-end
-
-local dummyFrame = CreateFrame("Frame")
-local handleEvent = function(self, event, ...)
+local handleEvent = function(_, event, ...)
     if event == 'CVAR_UPDATE' then
+        local dataObject = namespace.dataObject
+
         -- Note that restarting the sound system fires 'CVAR_UPDATE's with some
         -- incorrect values, so we refetch the CVar rather than taking the
         -- value directly from the event.
@@ -107,5 +84,39 @@ local handleEvent = function(self, event, ...)
     end
 end
 
+local DataObject = {
+    -- This is used as the initial value for the data object.
+
+    ['type'] = 'data source',
+
+    ['suffix'] = '%',
+
+    ['label'] = 'Volume',
+
+    ['OnClick'] = function(frame, mouseButton)
+        if mouseButton == 'LeftButton' then
+            cycleVolume()
+        elseif mouseButton == 'MiddleButton' then
+            Sound_GameSystem_RestartSoundSystem()
+        elseif mouseButton == 'RightButton' then
+            toggleMute()
+        end
+    end,
+
+    ['OnTooltipShow'] = function(frame)
+        frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Left Click:|r cycle through volume presets")
+        frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Middle Click:|r reload default sound inputs/outputs")
+        frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Right Click:|r toggle mute")
+    end,
+}
+
+local initialVolume = getVolume()
+namespace.dataObject = ldb:NewDataObject('VolumeCycle', DataObject)
+
+local dummyFrame = CreateFrame("Frame")
 dummyFrame:RegisterEvent('CVAR_UPDATE')
 dummyFrame:SetScript('OnEvent', handleEvent)
+
+-- Set an initial value for the data object.
+
+handleEvent(nil, 'CVAR_UPDATE', 'Sound_MasterVolume')
