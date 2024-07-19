@@ -59,15 +59,26 @@ local dataObject = ldb:NewDataObject('VolumeCycle',
 dataObject.OnClick = function(frame, mouseButton)
     if mouseButton == 'LeftButton' then
         cycleVolume()
+    elseif mouseButton == 'MiddleButton' then
+        Sound_GameSystem_RestartSoundSystem()
     end
+end
+
+dataObject.OnTooltipShow = function(frame)
+    frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Left Click:|r cycle through volume presets")
+    frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Middle Click:|r reload default sound inputs/outputs")
 end
 
 local dummyFrame = CreateFrame("Frame")
 local handleEvent = function(self, event, ...)
     if event == 'CVAR_UPDATE' then
-        local cvar, value = ...
+        -- Note that restarting the sound system fires 'CVAR_UPDATE's with some
+        -- incorrect values, so we refetch the CVar rather than taking the
+        -- value directly from the event.
+
+        local cvar, _ = ...
         if cvar == 'Sound_MasterVolume' then
-            dataObject.value = tostring(math.floor(tonumber(value) * 100 + 0.5))
+            dataObject.value = tostring(getVolume())
             dataObject.text = dataObject.value .. dataObject.suffix
         end
     end
