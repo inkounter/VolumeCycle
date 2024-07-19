@@ -2,7 +2,7 @@ local thisAddonName, namespace = ...
 
 local ldb = LibStub:GetLibrary('LibDataBroker-1.1')
 
-namespace.volumePresets = { 0, 8, 15, 30, 80 }
+namespace.volumePresets = { 8, 15, 30, 80 }
 local volumePresets = namespace.volumePresets
 
 local getVolume = function()
@@ -48,6 +48,18 @@ local cycleVolume = function()
     setVolume(volumePresets[1])
 end
 
+local isMuted = function()
+    -- Return 'true' if all sound is disabled.  Otherwise, return 'true'.
+
+    return GetCVar('Sound_EnableAllSound') == '0'
+end
+
+local toggleMute = function()
+    -- If all sound is disabled, enable it.  Otherwise, disable it.
+
+    SetCVar('Sound_EnableAllSound', 1 and isMuted() or 0)
+end
+
 local initialVolume = getVolume()
 local dataObject = ldb:NewDataObject('VolumeCycle',
                                      { ['type'] = 'data source',
@@ -61,12 +73,15 @@ dataObject.OnClick = function(frame, mouseButton)
         cycleVolume()
     elseif mouseButton == 'MiddleButton' then
         Sound_GameSystem_RestartSoundSystem()
+    elseif mouseButton == 'RightButton' then
+        toggleMute()
     end
 end
 
 dataObject.OnTooltipShow = function(frame)
     frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Left Click:|r cycle through volume presets")
     frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Middle Click:|r reload default sound inputs/outputs")
+    frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Right Click:|r toggle mute")
 end
 
 local dummyFrame = CreateFrame("Frame")
@@ -77,9 +92,17 @@ local handleEvent = function(self, event, ...)
         -- value directly from the event.
 
         local cvar, _ = ...
-        if cvar == 'Sound_MasterVolume' then
-            dataObject.value = tostring(getVolume())
-            dataObject.text = dataObject.value .. dataObject.suffix
+        if cvar == 'Sound_MasterVolume' or cvar == 'Sound_EnableAllSound' then
+            if cvar == 'Sound_MasterVolume' then
+                dataObject.value = tostring(getVolume())
+            end
+
+            local colorSequence = ''
+            if isMuted() then
+                colorSequence = '|cnRED_FONT_COLOR:'
+            end
+
+            dataObject.text = colorSequence .. dataObject.value .. dataObject.suffix
         end
     end
 end
