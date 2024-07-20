@@ -2,9 +2,6 @@ local thisAddonName, namespace = ...
 
 local ldb = LibStub:GetLibrary('LibDataBroker-1.1')
 
-namespace.volumePresets = { 8, 15, 30, 80 }
-local volumePresets = namespace.volumePresets
-
 local getVolume = function()
     -- Return the current master volume as a number in the range, '[0, 100]',
     -- rounded to the nearest integer.
@@ -26,7 +23,9 @@ local cycleVolume = function()
     -- Since the set of presets should be small, linear iteration is fast
     -- enough, and we don't need binary search.
 
+    local volumePresets = _G['VolumeCyclePresets']
     local volume = getVolume()
+
     for i, preset in ipairs(volumePresets) do
         if volume == preset then
             if i == #volumePresets then
@@ -101,7 +100,11 @@ local DataObject = {
         elseif mouseButton == 'MiddleButton' then
             Sound_GameSystem_RestartSoundSystem()
         elseif mouseButton == 'RightButton' then
-            toggleMute()
+            if IsShiftKeyDown() then
+                InterfaceOptionsFrame_OpenToCategory(namespace.optionsFrame)
+            else
+                toggleMute()
+            end
         end
     end,
 
@@ -109,6 +112,7 @@ local DataObject = {
         frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Left Click:|r cycle through volume presets")
         frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Middle Click:|r reload default sound inputs/outputs")
         frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Right Click:|r toggle mute")
+        frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Shift + Right Click:|r open options")
     end,
 }
 
