@@ -14,7 +14,7 @@ local setVolume = function(value)
     -- Set the master volume to the specified 'value', where 'value' is a
     -- number in the range, '[0, 100]'.
 
-    SetCVar('Sound_MasterVolume', value / 100)
+    SetCVar('Sound_MasterVolume', math.min(math.max(value, 0), 100) / 100)
 end
 
 local cycleVolume = function()
