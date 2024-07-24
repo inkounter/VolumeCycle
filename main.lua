@@ -94,30 +94,6 @@ local DataObject = {
 
     ['icon'] = 'interface/common/voicechat-speaker.blp',
 
-    ['OnEnter'] = function(frame)
-        -- Install an 'OnMouseWheel' handler to increment or decrement the
-        -- volume by 1% upon scrolling up or scrolling down.  Change the
-        -- increment/decrement to 10% if the shift key is held down while
-        -- scrolling.  Also invoke the 'OnTooltipShow' method to ensure the
-        -- tooltip is populated and shown.
-
-        if not frame:IsMouseWheelEnabled() then
-            frame:EnableMouseWheel(true)
-
-            local onMouseWheel = function(frame, delta)
-                setVolume(getVolume() + delta * (IsShiftKeyDown() and 10 or 1))
-            end
-
-            frame:SetScript('OnMouseWheel', onMouseWheel)
-        end
-
-        GameTooltip:SetOwner(frame, 'ANCHOR_NONE')
-        GameTooltip:SetPoint('TOP', frame, 'BOTTOM')
-        GameTooltip:ClearLines()
-        namespace.dataObject.OnTooltipShow(GameTooltip)
-        GameTooltip:Show()
-    end,
-
     ['OnClick'] = function(frame, mouseButton)
         if mouseButton == 'LeftButton' then
             cycleVolume()
@@ -137,7 +113,6 @@ local DataObject = {
         frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Middle Click:|r reload default sound inputs/outputs")
         frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Right Click:|r toggle mute")
         frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:Shift + Right Click:|r open options")
-        frame:AddLine("|cnLIGHTBLUE_FONT_COLOR:[Shift +] Mouse Scroll:|r increment/decrement volume")
     end,
 }
 
