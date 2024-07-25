@@ -101,7 +101,7 @@ local DataObject = {
             Sound_GameSystem_RestartSoundSystem()
         elseif mouseButton == 'RightButton' then
             if IsShiftKeyDown() then
-                InterfaceOptionsFrame_OpenToCategory(namespace.optionsFrame)
+                Settings.OpenToCategory(namespace.optionsCategoryId)
             else
                 toggleMute()
             end

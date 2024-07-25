@@ -60,8 +60,8 @@ local Options = {
     end,
 }
 
-local optionsFrame = Options:register()
-namespace.optionsFrame = optionsFrame
+local optionsFrame, optionsCategoryId = Options:register()
+namespace.optionsCategoryId = optionsCategoryId
 
 optionsFrame:RegisterEvent("ADDON_LOADED")
 optionsFrame:SetScript('OnEvent', handleEvent)
