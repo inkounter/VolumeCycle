@@ -1,7 +1,7 @@
-## Interface: 100207
+## Interface: 110000
 ## Author: Inkounter
 ## Title: Volume Cycle
-## Version: 1.0
+## Version: 1.1
 ## Notes: An LDB module to cycle between various volume presets.
 ## SavedVariables: VolumeCyclePresets
 
