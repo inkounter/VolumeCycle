@@ -2,11 +2,12 @@ local thisAddonName, namespace = ...
 
 local presetDefaults = { 8, 15, 30, 80 }
 
-local handleEvent = function(_, event, ...)
+local handleEvent = function(frame, event, ...)
     if event == 'ADDON_LOADED' then
         local addon = ...
         if addon == thisAddonName and _G['VolumeCyclePresets'] == nil then
             _G['VolumeCyclePresets'] = presetDefaults
+            frame:UnregisterEvent('ADDON_LOADED')
         end
     end
 end
