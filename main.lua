@@ -2,11 +2,30 @@ local thisAddonName, namespace = ...
 
 local ldb = LibStub:GetLibrary('LibDataBroker-1.1')
 
+local cvarCache = {}
+
+local getCvar = function(cvarName)
+    -- Get the value of the cvar by the specified 'cvarName'.  If the value is
+    -- available, save it to the cache and return the value.  Otherwise, return
+    -- the value from the cache, if any.
+
+    -- This function is useful because the 'GetCVar' built-in has been observed
+    -- to return 'nil' upon reloading the sound system.
+
+    local value = GetCVar(cvarName)
+    if value == nil then
+        return cvarCache[cvarName]
+    else
+        cvarCache[cvarName] = value
+        return value
+    end
+end
+
 local getVolume = function()
     -- Return the current master volume as a number in the range, '[0, 100]',
     -- rounded to the nearest integer.
 
-    local cvar = GetCVar('Sound_MasterVolume')
+    local cvar = getCvar('Sound_MasterVolume')
     return math.floor(cvar * 100 + 0.5)
 end
 
@@ -50,7 +69,7 @@ end
 local isMuted = function()
     -- Return 'true' if all sound is disabled.  Otherwise, return 'true'.
 
-    return GetCVar('Sound_EnableAllSound') == '0'
+    return getCvar('Sound_EnableAllSound') == '0'
 end
 
 local toggleMute = function()
